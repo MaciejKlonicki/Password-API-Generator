@@ -2,6 +2,7 @@ package org.maciejklonicki.passwordapigenerator.password;
 
 import lombok.RequiredArgsConstructor;
 import org.maciejklonicki.passwordapigenerator.password.dto.PasswordListDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class PasswordController {
     }
 
     @PostMapping
-    public Password createPassword (@RequestBody Password password) {
+    public ResponseEntity<Password> createPassword (@RequestBody Password password) {
         return passwordService.createPassword(password);
     }
 
