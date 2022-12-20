@@ -9,8 +9,9 @@ import java.util.Objects;
 @Entity
 @NoArgsConstructor
 @ToString
+@Builder
+@AllArgsConstructor
 public class Password {
-
     @Id
     @SequenceGenerator(
             name = "password_id_sequence",
@@ -29,11 +30,8 @@ public class Password {
     @Column(nullable = false)
     private String complexity;
 
-    public Password(Long id, String password, String complexity) {
-        this.id = id;
-        this.dateOfPasswordCreation = Instant.now();
-        this.password = password;
-        this.complexity = complexity;
+    public Password(String newPassword) {
+
     }
 
     public Long getId() {
@@ -48,8 +46,8 @@ public class Password {
         return dateOfPasswordCreation;
     }
 
-    public void setDateOfPasswordCreation(Instant dateOfPasswordCreation) {
-        this.dateOfPasswordCreation = dateOfPasswordCreation;
+    public void setDateOfPasswordCreation() {
+        this.dateOfPasswordCreation = Instant.now();
     }
 
     public String getPassword() {
