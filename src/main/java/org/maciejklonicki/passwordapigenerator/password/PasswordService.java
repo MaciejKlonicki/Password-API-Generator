@@ -1,5 +1,6 @@
 package org.maciejklonicki.passwordapigenerator.password;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.passay.CharacterRule;
 import org.passay.EnglishCharacterData;
@@ -49,6 +50,35 @@ public class PasswordService {
         }
     }
 
+    public Optional<Password> getSinglePassword(String password) {
+        return Optional.ofNullable(passwordRepository.findByPassword(password));
+    }
+
+    public Optional<Password> getNewSinglePassword(String password) {
+        return getPassword(password);
+    }
+    @Transactional
+    public Optional<Password> deletePasswordOrShowIt(String password) {
+        return getPassword(password);
+    }
+
+    private Optional<Password> getPassword(String password) {
+        Password passwordFromDB = passwordRepository.findByPassword(password);
+        if (passwordFromDB != null) {
+            return Optional.of(passwordFromDB);
+        } else  {
+            Password newPassword = new Password();
+            newPassword.setPassword(password);
+            setComplexityLevels(newPassword, password);
+            return Optional.of(newPassword);
+        }
+    }
+
+    @Transactional
+    public void deletePassword(String password) {
+        passwordRepository.deleteByPassword(password);
+    }
+
     private static void setComplexityLevels(Password password, String newPassword) {
         boolean hasUppercase = !newPassword.equals(newPassword.toLowerCase());
         boolean hasLowercase = !newPassword.equals(newPassword.toUpperCase());
@@ -62,22 +92,6 @@ public class PasswordService {
             password.setComplexity("średnie");
         } else if (newPassword.length() <= 5 && (hasLowercase || hasUppercase)) {
             password.setComplexity("słabe");
-        }
-    }
-
-    public Optional<Password> getSinglePassword(String password) {
-        return Optional.ofNullable(passwordRepository.findByPassword(password));
-    }
-
-    public Optional<Password> getNewSinglePassword(String password) {
-        Password passwordFromDB = passwordRepository.findByPassword(password);
-        if (passwordFromDB != null) {
-            return Optional.of(passwordFromDB);
-        } else {
-            Password newPassword = new Password();
-            newPassword.setPassword(password);
-            setComplexityLevels(newPassword,password);
-            return Optional.of(newPassword);
         }
     }
 }

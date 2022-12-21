@@ -39,4 +39,14 @@ public class PasswordController {
         return passwordService.createPassword(password);
     }
 
+    @DeleteMapping("{password}")
+    public void deletePassword(@PathVariable String password) {
+        passwordService.deletePassword(password);
+    }
+
+    @DeleteMapping("/new/{password}")
+    public List<NewPasswordSingleDto> deletePasswordOrShowIt(@PathVariable String password) {
+        return mapToNewPasswordSingleDto(passwordService.deletePasswordOrShowIt(password));
+    }
+
 }
