@@ -29,10 +29,13 @@ public class PasswordService {
 
         PasswordGenerator passwordGenerator = new PasswordGenerator();
         List<CharacterRule> rules;
-            rules = Arrays.asList(
-                    new CharacterRule(EnglishCharacterData.LowerCase, 1),
-                    new CharacterRule(EnglishCharacterData.UpperCase, 1),
-                    new CharacterRule(EnglishCharacterData.Special, 1)
+        CharacterRule specialCharRule = new CharacterRule(EnglishCharacterData.Special, 1);
+        CharacterRule upperCharRule = new CharacterRule(EnglishCharacterData.UpperCase, 1);
+        CharacterRule lowerCharRule = new CharacterRule(EnglishCharacterData.LowerCase, 1);
+        rules = Arrays.asList(
+                lowerCharRule,
+                upperCharRule,
+                specialCharRule
             );
 
         Random rand = new Random();
@@ -41,8 +44,8 @@ public class PasswordService {
         if (newPassword.length() > 3 && newPassword.length() <= 32) {
             password.setPassword(newPassword);
             password.setDateOfPasswordCreation();
-
             setComplexityLevels(password, newPassword);
+
             Password savedPassword = passwordRepository.save(password);
             return new ResponseEntity<>(savedPassword, HttpStatus.OK);
         } else {
@@ -62,6 +65,11 @@ public class PasswordService {
         return getPassword(password);
     }
 
+    @Transactional
+    public void deletePassword(String password) {
+        passwordRepository.deleteByPassword(password);
+    }
+
     private Optional<Password> getPassword(String password) {
         Password passwordFromDB = passwordRepository.findByPassword(password);
         if (passwordFromDB != null) {
@@ -72,11 +80,6 @@ public class PasswordService {
             setComplexityLevels(newPassword, password);
             return Optional.of(newPassword);
         }
-    }
-
-    @Transactional
-    public void deletePassword(String password) {
-        passwordRepository.deleteByPassword(password);
     }
 
     private static void setComplexityLevels(Password password, String newPassword) {
